@@ -1,10 +1,15 @@
 #include <WiFi.h>
+#include <FastLED.h>
 #include "webConfig.h"
 #include "htmlResponse.h"
 
-WiFiServer server(80);
+#define NUM_LEDS 12  //set how many LEDs you have
+#define DATA_PIN 18  //set pin where data pin is connected
 
-short ledMode=0;
+WiFiServer server(80);
+CRGB leds[NUM_LEDS];
+
+short ledMode=1;
 
 void setup() {
   Serial.begin(115200);
@@ -16,12 +21,22 @@ void setup() {
   Serial.println();
   Serial.println(WiFi.localIP());
   server.begin();
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 }
-
+int offset=0;
 void loop() {
   HTTPRecive();
   Serial.println(ledMode);
-  delay(100);
+  if(ledMode){
+      for(int i=0;i<NUM_LEDS;i++){
+        leds[i].setHue(map(i,0,12,0,255)+offset);
+      }
+  }else{
+    FastLED.clear();
+  }
+  FastLED.show();
+  offset++;
+  offset%=256;
 }
 
 
