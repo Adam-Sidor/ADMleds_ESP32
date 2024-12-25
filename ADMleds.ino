@@ -2,6 +2,7 @@
 #include <FastLED.h>
 #include "webConfig.h"
 #include "htmlResponse.h"
+#include "lightEffects.h"
 
 #define NUM_LEDS 12  //set how many LEDs you have
 #define DATA_PIN 18  //set pin where data pin is connected
@@ -23,20 +24,15 @@ void setup() {
   server.begin();
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 }
-int offset=0;
 void loop() {
   HTTPRecive();
   Serial.println(ledMode);
   if(ledMode){
-      for(int i=0;i<NUM_LEDS;i++){
-        leds[i].setHue(map(i,0,12,0,255)+offset);
-      }
+    rainbowARGB(leds, NUM_LEDS);
   }else{
     FastLED.clear();
   }
   FastLED.show();
-  offset++;
-  offset%=256;
 }
 
 
