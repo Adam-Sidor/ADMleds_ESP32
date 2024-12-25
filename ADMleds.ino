@@ -27,10 +27,17 @@ void setup() {
 void loop() {
   HTTPRecive();
   Serial.println(ledMode);
-  if(ledMode){
-    rainbowARGB(leds, NUM_LEDS);
-  }else{
-    FastLED.clear();
+  switch (ledMode) {
+    case 0:
+      rainbowARGB(leds, NUM_LEDS);
+      break;
+    case 1:
+      rainbowRGB(leds,NUM_LEDS,10);
+      break;
+    case 2:
+      break;
+    default:
+      FastLED.clear();
   }
   FastLED.show();
 }
