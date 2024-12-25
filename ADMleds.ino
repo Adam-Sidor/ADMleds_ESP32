@@ -12,7 +12,9 @@ CRGB leds[NUM_LEDS];
 
 CRGB ledsColor(0,0,0);
 
-short ledMode=1;
+short ledMode=0;
+bool ledStatus=true,isNightModeOn;
+uint8_t brightness=255,nightModeBrighness=16;
 
 void setup() {
   Serial.begin(115200);
@@ -28,8 +30,12 @@ void setup() {
 }
 void loop() {
   HTTPRecive();
-  Serial.println(ledMode);
-  switch (ledMode) {
+  if(ledStatus){
+    if(isNightModeOn)
+      FastLED.setBrightness(nightModeBrighness);
+    else
+      FastLED.setBrightness(brightness);
+    switch (ledMode) {
     case 0:
       rainbowARGB(leds, NUM_LEDS);
       break;
@@ -41,6 +47,9 @@ void loop() {
       break;
     default:
       FastLED.clear();
+  }
+  }else{
+    FastLED.setBrightness(0);
   }
   FastLED.show();
 }
@@ -77,6 +86,26 @@ void HTTPRecive()
         if (currentLine.indexOf("/mode=") != -1)
         {
           ledMode = catchValue("/mode=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/status=") != -1)
+        {
+          ledStatus = catchValue("/status=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/brightness=") != -1)
+        {
+          brightness = catchValue("/brightness=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/nightmode=") != -1)
+        {
+          isNightModeOn = catchValue("/nightmode=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/nightbrightness=") != -1)
+        {
+          nightModeBrighness = catchValue("/nightbrightness=",currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/r=") != -1)
