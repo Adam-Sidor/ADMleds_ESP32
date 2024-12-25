@@ -21,5 +21,10 @@ void rainbowRGB(CRGB *leds,int NUM_LEDS,int delay){
     offset%=256;
     lastChange=millis();
   }
-    
+}
+
+void setColor(CRGB *leds,int NUM_LEDS,CRGB color){
+  for(int i=0;i<NUM_LEDS;i++){
+    leds[i] = color;
+  }
 }

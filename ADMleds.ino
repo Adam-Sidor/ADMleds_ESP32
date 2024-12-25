@@ -10,6 +10,8 @@
 WiFiServer server(80);
 CRGB leds[NUM_LEDS];
 
+CRGB ledsColor(0,0,0);
+
 short ledMode=1;
 
 void setup() {
@@ -35,6 +37,7 @@ void loop() {
       rainbowRGB(leds,NUM_LEDS,10);
       break;
     case 2:
+      setColor(leds,NUM_LEDS,ledsColor);
       break;
     default:
       FastLED.clear();
@@ -74,6 +77,21 @@ void HTTPRecive()
         if (currentLine.indexOf("/mode=") != -1)
         {
           ledMode = catchValue("/mode=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/r=") != -1)
+        {
+          ledsColor.r = catchValue("/r=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/g=") != -1)
+        {
+          ledsColor.g = catchValue("/g=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/b=") != -1)
+        {
+          ledsColor.b = catchValue("/b=",currentLine);
           doonce = 0;
         }
       }
