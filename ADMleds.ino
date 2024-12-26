@@ -4,7 +4,7 @@
 #include "htmlResponse.h"
 #include "lightEffects.h"
 
-#define NUM_LEDS 35  //set how many LEDs you have
+#define NUM_LEDS 119  //set how many LEDs you have
 #define DATA_PIN 18  //set pin where data pin is connected
 
 WiFiServer server(80);
@@ -37,7 +37,7 @@ void loop() {
       FastLED.setBrightness(brightness);
     switch (ledMode) {
     case 0:
-      rainbowARGB(leds, NUM_LEDS);
+      rainbowARGB(leds, NUM_LEDS,50);
       break;
     case 1:
       rainbowRGB(leds,NUM_LEDS,10);
