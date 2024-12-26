@@ -1,4 +1,3 @@
-#include "esp32-hal.h"
 #include "lightEffects.h"
 
 int offset=0;
@@ -26,5 +25,24 @@ void rainbowRGB(CRGB *leds,int NUM_LEDS,int delay){
 void setColor(CRGB *leds,int NUM_LEDS,CRGB color){
   for(int i=0;i<NUM_LEDS;i++){
     leds[i] = color;
+  }
+}
+
+void thunder(CRGB *leds,int NUM_LEDS,CRGB color,int delay){
+  if(lastChange+delay<millis()){
+    int startPoint = random(NUM_LEDS);
+    if(startPoint>NUM_LEDS/2){
+      for(int i=startPoint;i>=0;i--){
+        leds[i] = color;
+        FastLED.show();
+      }
+    }else{
+      for(int i=startPoint;i<NUM_LEDS;i++){
+        leds[i] = color;
+        FastLED.show();
+      }
+    }
+    FastLED.clear();
+    lastChange=millis();
   }
 }

@@ -4,7 +4,7 @@
 #include "htmlResponse.h"
 #include "lightEffects.h"
 
-#define NUM_LEDS 12  //set how many LEDs you have
+#define NUM_LEDS 35  //set how many LEDs you have
 #define DATA_PIN 18  //set pin where data pin is connected
 
 WiFiServer server(80);
@@ -18,7 +18,7 @@ uint8_t brightness=255,nightModeBrighness=16;
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD); 
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD); //set your WiFi settings
   while (WiFi.status() != WL_CONNECTED){
     Serial.print(".");
     delay(10);
@@ -44,6 +44,9 @@ void loop() {
       break;
     case 2:
       setColor(leds,NUM_LEDS,ledsColor);
+      break;
+    case 3:
+      thunder(leds,NUM_LEDS,ledsColor,250);
       break;
     default:
       FastLED.clear();
