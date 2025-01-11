@@ -80,6 +80,8 @@ Instrukcja krok po kroku, jak skonfigurować i uruchomić projekt:
     - Tęcza ARGB
     - Tęcza RGB
     - Ustawienie stałego koloru
+    - Burza
+    - 2 kolorowy gradient
 - Tryb nocny
     - Zmniejszenie jasności
     - Ustawienie jasności trybu nocnego
