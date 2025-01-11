@@ -4,13 +4,14 @@
 #include "htmlResponse.h"
 #include "lightEffects.h"
 
-#define NUM_LEDS 119  //set how many LEDs you have
+#define NUM_LEDS 35  //set how many LEDs you have
 #define DATA_PIN 18  //set pin where data pin is connected
 
 WiFiServer server(80);
 CRGB leds[NUM_LEDS];
 
 CRGB ledsColor(0,0,0);
+CRGB gradientColor(0,0,0);
 
 short ledMode=0;
 bool ledStatus=true,isNightModeOn;
@@ -47,6 +48,9 @@ void loop() {
       break;
     case 3:
       thunder(leds,NUM_LEDS,ledsColor,250);
+      break;
+    case 4:
+      gradient(leds, NUM_LEDS, ledsColor, gradientColor,100);
       break;
     default:
       FastLED.clear();
@@ -124,6 +128,21 @@ void HTTPRecive()
         if (currentLine.indexOf("/b=") != -1)
         {
           ledsColor.b = catchValue("/b=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/gradientr=") != -1)
+        {
+          gradientColor.r = catchValue("/gradientr=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/gradientg=") != -1)
+        {
+          gradientColor.g = catchValue("/gradientg=",currentLine);
+          doonce = 0;
+        }
+        if (currentLine.indexOf("/gradientb=") != -1)
+        {
+          gradientColor.b = catchValue("/gradientb=",currentLine);
           doonce = 0;
         }
       }
