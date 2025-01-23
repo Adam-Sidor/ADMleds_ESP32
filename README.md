@@ -31,7 +31,9 @@ Kontroler LED WS2812B na podstawie ESP32 wykorzystujący zapytania HTTP do stero
 - Oprogramowanie:
     - Arduino IDE (Tylko podczas instalacji)
     - Przeglądarka internetowa
-    - [Aplikacja](https://github.com/Adam-Sidor/ADMleds_IOS)   
+- Opcjonalnie:
+    - [Aplikacja na iOS](https://github.com/Adam-Sidor/ADMleds_IOS)
+    - [Skrypt na PC](https://github.com/Adam-Sidor/ADMleds_PC)
 
 ---
 
@@ -67,6 +69,8 @@ Instrukcja krok po kroku, jak skonfigurować i uruchomić projekt:
     - Dla bardziej zaawansowanych można ręcznie zmieniać adresy podstron np. `adresIP/status=1` włączy Ledy.
 2. Aplikacja
     - Dla wygody została zaprojektowana [aplikacja](https://github.com/Adam-Sidor/ADMleds_IOS) na system iOS.
+3. Skrypt na PC
+    - Jeśli chcesz żeby twoje ledy włączały się automatycznie po włączeniu komputera możesz użyć przygotowanego [skryptu](https://github.com/Adam-Sidor/ADMleds_PC).
 
 
 ---
@@ -74,6 +78,7 @@ Instrukcja krok po kroku, jak skonfigurować i uruchomić projekt:
 ## Funkcjonalności
 - Hostowanie serwera HTTP do sterowania.
 - Dedykowana [aplikacja](https://github.com/Adam-Sidor/ADMleds_IOS) na iOS pozwalająca na sterowanie kilkoma urzadzeniami jednocześnie.
+- Dedykowany [skrypt](https://github.com/Adam-Sidor/ADMleds_PC) pozwalający na automatyczne włączanie ledów.
 - Włączanie i wyłączanie Ledów.
 - Ustawienie jasności.
 - Wiele efektów
