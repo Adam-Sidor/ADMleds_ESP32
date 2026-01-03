@@ -1,106 +1,137 @@
-# ADM leds - ESP32
-Kontroler LED WS2812B na podstawie ESP32 wykorzystujący zapytania HTTP do sterowania kontrolerem.
+# ADM LEDs – ESP32
+
+A WS2812B LED controller based on ESP32, using HTTP requests to control the device.
 
 ---
 
-## Spis treści
-1. [Opis projektu](#opis-projektu)  
-2. [Wymagania](#wymagania)  
-3. [Instalacja](#instalacja)  
-4. [Użycie](#użycie)  
-5. [Funkcjonalności](#funkcjonalności)  
-6. [Licencja](#licencja)  
-7. [Kontakt](#kontakt)  
+## Table of Contents
+
+1. [Project Description](#project-description)
+2. [Requirements](#requirements)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Features](#features)
+6. [License](#license)
+7. [Contact](#contact)
 
 ---
 
-## Opis projektu
-- Projekt umożliwia sterowanie taśmą LED WS2812B za pomocą zapytań HTTP, wykorzystując moduł ESP32 jako jednostkę sterującą.
-- ESP32 obsługuje komunikację WiFi, umożliwiając zdalne zarządzanie oświetleniem przy użyciu przeglądarki internetowej lub [aplikacji mobilnej](https://github.com/Adam-Sidor/ADMleds_IOS).
-- W projekcie znajduje się kod dla ESP32 napisany w Arduino IDE, który interpretuje zapytania HTTP i odpowiednio steruje diodami LED na taśmie.
-- Projekt może być wykorzystany jako element inteligentnego domu, dekoracji świetlnej, lub w celach edukacyjnych do nauki protokołów sieciowych i sterowania diodami ARGB.  
+## Project Description
+
+* This project allows controlling a WS2812B LED strip using HTTP requests, with the ESP32 module acting as the main controller.
+* The ESP32 handles Wi-Fi communication, enabling remote light control via a web browser or a dedicated mobile application.
+* The project includes ESP32 code written in Arduino IDE, which interprets HTTP requests and controls the LED strip accordingly.
+* The project can be used as part of a smart home system, decorative lighting setup, or for educational purposes related to networking protocols and ARGB LED control.
 
 ---
 
-## Wymagania
-- Hardware:
-    - ESP-32
-    - Taśma LED WS2812B
-    - Połączenie Wi-Fi
-    - Zasilacz 5V
-- Oprogramowanie:
-    - Arduino IDE (Tylko podczas instalacji)
-    - Przeglądarka internetowa
-- Opcjonalnie:
-    - [Aplikacja na iOS](https://github.com/Adam-Sidor/ADMleds_IOS)
-    - [Skrypt na PC](https://github.com/Adam-Sidor/ADMleds_PC)
+## Requirements
+
+* **Hardware:**
+
+  * ESP32
+  * WS2812B LED strip
+  * Wi-Fi connection
+  * 5V power supply
+
+* **Software:**
+
+  * Arduino IDE (only required during installation)
+  * Web browser
+
+* **Optional:**
+
+  * [iOS application](https://github.com/Adam-Sidor/ADMleds_IOS)
+  * [PC script](https://github.com/Adam-Sidor/ADMleds_PC)
 
 ---
 
-## Instalacja
-Instrukcja krok po kroku, jak skonfigurować i uruchomić projekt:  
-1. Sklonowanie repozytorium:  
+## Installation
+
+Step-by-step instructions on how to set up and run the project:
+
+1. Clone the repository:
+
    ```bash
    git clone https://github.com/Adam-Sidor/ADMleds_ESP32
    ```
-2. Wgranie kodu na ESP-32:  
-    - Otwórz plik `.ino` w Arduino IDE. 
-    - Zainstaluj potrzebne biblioteki. 
-    - Ustaw odpowiednie wartości w pliku tj. 
-        - ilość diod 
-        - numer pinu sterującego 
-        - SSID twojego Wi-Fi
-        - hasło twojego Wi-Fi
-    - Wybierz odpowiedni port COM oraz model ESP-32.  
-    - Wgraj kod na płytkę.
-    - Otwórz monitor portu szeregowego i sprawdź przypisany adres IP - UWAGA! adres może ulec zmianie jeśli nie wykona się kolejnego kroku.
-3. Ustawienie statycznego adresu IP (Opcjonalne)
-4. Podłączenie komponentów
-    - Połącz masę wszystkich komponentów.
-    - Połącz zasilanie `+5V` do ESP-32 oraz taśmy led.
-    - Połącz pin danych taśmy do wybranego w punkcie 2. pinu na mikrokontrolerze.
+
+2. Upload the code to the ESP32:
+
+   * Open the `.ino` file in Arduino IDE.
+   * Install the required libraries.
+   * Set the appropriate values in the code:
+
+     * number of LEDs
+     * control pin number
+     * your Wi-Fi SSID
+     * your Wi-Fi password
+   * Select the correct COM port and ESP32 board model.
+   * Upload the code to the board.
+   * Open the Serial Monitor and check the assigned IP address.
+     **Note:** The IP address may change if step 3 is skipped.
+
+3. Set a static IP address (optional).
+
+4. Connect the components:
+
+   * Connect the ground (GND) of all components together.
+   * Connect `+5V` power to both the ESP32 and the LED strip.
+   * Connect the LED strip data pin to the GPIO pin selected in step 2.
 
 ---
 
-## Użycie
-1. Przeglądarka
-    - W swojej przeglądarce wejdź na adres zapisany w kroku 2 [instalacji](#instalacja)
-    - Teraz możesz sterować swoimi Ledami z przeglądarki uzywając gotowych przycisków na stronie.
-    - Dla bardziej zaawansowanych można ręcznie zmieniać adresy podstron np. `adresIP/status=1` włączy Ledy.
-2. Aplikacja
-    - Dla wygody została zaprojektowana [aplikacja](https://github.com/Adam-Sidor/ADMleds_IOS) na system iOS.
-3. Skrypt na PC
-    - Jeśli chcesz żeby twoje ledy włączały się automatycznie po włączeniu komputera możesz użyć przygotowanego [skryptu](https://github.com/Adam-Sidor/ADMleds_PC).
+## Usage
 
+1. **Web Browser**
 
----
+   * Open your browser and navigate to the IP address obtained in step 2 of the installation.
+   * Control the LEDs using the buttons available on the webpage.
+   * Advanced users can manually modify URL endpoints, e.g. `IPaddress/status=1` turns the LEDs on.
 
-## Funkcjonalności
-- Hostowanie serwera HTTP do sterowania.
-- Dedykowana [aplikacja](https://github.com/Adam-Sidor/ADMleds_IOS) na iOS pozwalająca na sterowanie kilkoma urzadzeniami jednocześnie.
-- Dedykowany [skrypt](https://github.com/Adam-Sidor/ADMleds_PC) pozwalający na automatyczne włączanie ledów.
-- Włączanie i wyłączanie Ledów.
-- Ustawienie jasności.
-- Wiele efektów
-    - Tęcza ARGB
-    - Tęcza RGB
-    - Ustawienie stałego koloru
-    - Burza
-    - 2 kolorowy gradient
-- Tryb nocny
-    - Zmniejszenie jasności
-    - Ustawienie jasności trybu nocnego
+2. **Mobile Application**
+
+   * A dedicated [iOS application](https://github.com/Adam-Sidor/ADMleds_IOS) is available for convenient control.
+     
+
+3. **PC Script**
+
+   * To automatically turn the LEDs on when the computer starts, use the prepared [PC script](https://github.com/Adam-Sidor/ADMleds_PC).
 
 ---
 
-## Licencja
-Wszystkie prawa zastrzeżone. Projekt został udostępniony wyłącznie w celach demonstracyjnych i edukacyjnych.  
-- Możesz korzystać z tego projektu do użytku osobistego i edukacyjnego.  
-- Wykorzystanie komercyjne lub redystrybucja projektu w całości lub w części wymaga wyraźnej pisemnej zgody autora.
+## Features
+
+* Built-in HTTP server for LED control.
+* Dedicated iOS application allowing control of multiple devices simultaneously.
+* Dedicated PC script for automatic LED activation.
+* LED on/off control.
+* Brightness adjustment.
+* Multiple lighting effects:
+
+  * ARGB rainbow
+  * RGB rainbow
+  * Static color
+  * Storm effect
+  * Two-color gradient
+* Night mode:
+
+  * Reduced brightness
+  * Custom night mode brightness level
+* Warning indicator
 
 ---
 
-## Kontakt
-- Autor: Adam Sidor  
-- E-mail: sidoadsi1@gmail.com  
-- LinkedIn: [Mój profil](https://www.linkedin.com/in/adam-sidor-088a56341)  
+## License
+
+All rights reserved. This project is provided for demonstration and educational purposes only.
+
+* You may use this project for personal and educational purposes.
+* Commercial use or redistribution of this project, in whole or in part, requires explicit written permission from the author.
+
+---
+
+## Contact
+
+* Author: Adam Sidor
+* Email: [sidoadsi1@gmail.com](mailto:sidoadsi1@gmail.com)
