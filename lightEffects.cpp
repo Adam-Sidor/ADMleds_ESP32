@@ -4,8 +4,6 @@
 int offset = 0;
 long lastChange = 0;
 
-
-
 void rainbowARGB(CRGB *leds, int NUM_LEDS, int delay) {
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i].setHue(map(i, 0, NUM_LEDS - 1, 0, 255) + offset);
@@ -64,4 +62,26 @@ void gradient(CRGB *leds, int NUM_LEDS, CRGB startColor, CRGB endColor, int dela
     offset %= NUM_LEDS;
     lastChange = millis();
   }
+}
+
+bool catchWarning(CRGB *leds, int NUM_LEDS, int blinks, int delay){
+  static int currentIteration;
+  static int lastChange;
+  static bool status;
+  if(currentIteration==blinks){
+    currentIteration = 0;
+    return false;
+  }
+  if(lastChange + delay < millis()){
+    if(!status){
+      setColor(leds,NUM_LEDS,CRGB(255, 255, 0));
+    }
+    else{
+      setColor(leds,NUM_LEDS,CRGB(0, 0, 0));
+      currentIteration++;
+    }
+    status=!status;
+    lastChange = millis();
+  }
+  return true;
 }
