@@ -4,7 +4,7 @@
 #include "htmlResponse.h"
 #include "lightEffects.h"
 
-#define NUM_LEDS 35  //set how many LEDs you have
+#define NUM_LEDS 108  //set how many LEDs you have
 #define DATA_PIN 18  //set pin where data pin is connected
 
 //uncomment this lines
@@ -133,7 +133,7 @@ void HTTPRecive() {
           doonce = 0;
         }
         if (currentLine.indexOf("/warning") != -1) {
-          warning = true;
+          warning = ledStatus;
           doonce = 0;
         }
       }
