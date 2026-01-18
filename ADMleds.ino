@@ -3,6 +3,7 @@
 #include "webConfig.h"
 #include "htmlResponse.h"
 #include "lightEffects.h"
+#include "PIR.h"
 
 #define NUM_LEDS 108  //set how many LEDs you have
 #define DATA_PIN 18   //set pin where data pin is connected
@@ -18,13 +19,14 @@ CRGB leds[NUM_LEDS];
 CRGB ledsColor(0, 0, 0);
 CRGB gradientColor(0, 0, 0);
 
+PIR pir(PIR_PIN);
+
 short ledMode = 0;
-bool ledStatus = true, isNightModeOn, warning, warningStatus = true, PIRenable = true;
+bool ledStatus = true, isNightModeOn, warning, warningStatus = true;
 uint8_t brightness = 255, nightModeBrighness = 16;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(PIR_PIN,INPUT);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  //set your WiFi settings
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -34,6 +36,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   server.begin();
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  pir.setDelay(5);
 }
 void loop() {
   HTTPRecive();
@@ -65,13 +68,13 @@ void loop() {
           FastLED.clear();
       }
     }
-  }else if(!digitalRead(PIR_PIN) && PIRenable){
-    startPIR(5, isNightModeOn, ledStatus);
+  }else if(pir.isTriggered()){
+    pir.start(isNightModeOn, ledStatus);
   } else {
     FastLED.setBrightness(0);
   }
   FastLED.show();
-  catchPIR(isNightModeOn, ledStatus);
+  pir.update(isNightModeOn, ledStatus);
 }
 
 

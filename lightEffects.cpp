@@ -86,26 +86,3 @@ bool catchWarning(CRGB *leds, int NUM_LEDS, int blinks, int delay) {
   }
   return true;
 }
-
-bool startNightmodeState, hasTimerStarted;
-int delaySec;
-long lastChange;
-
-void startPIR(int delaySeconds, bool &nightMode, bool &ledStatus) {
-  startNightmodeState = nightMode;
-  nightMode = true;
-  ledStatus = true;
-  delaySec = delaySeconds;
-  hasTimerStarted = true;
-  lastChange = millis();
-}
-
-void catchPIR(bool &nightMode, bool &ledStatus) {
-  if (hasTimerStarted) {
-    if (lastChange + delaySec * 1000 < millis()) {
-      nightMode = startNightmodeState;
-      ledStatus = false;
-      hasTimerStarted = false;
-    }
-  }
-}
