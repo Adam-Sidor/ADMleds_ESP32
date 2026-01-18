@@ -41,10 +41,12 @@ void thunder(CRGB *leds, int NUM_LEDS, CRGB color, int delay) {
       for (int i = startPoint; i >= 0; i--) {
         leds[i] = color;
       }
+      FastLED.show();
     } else {
       for (int i = startPoint; i < NUM_LEDS; i++) {
         leds[i] = color;
       }
+      FastLED.show();
     }
     FastLED.clear();
     lastChange = millis();
