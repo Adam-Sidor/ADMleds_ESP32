@@ -148,6 +148,16 @@ void HTTPRecive() {
           }
           doonce = 0;
         }
+        if (currentLine.indexOf("/pir") != -1) {
+          if (currentLine.indexOf("/enable=") != -1) {
+            pir.setEnable(catchValue("/enable=", currentLine));
+            doonce = 0;
+          }
+          if (currentLine.indexOf("/delay=") != -1) {
+            pir.setDelay(catchValue("/delay=", currentLine));
+            doonce = 0;
+          }
+        }
       }
     }
     client.stop();
