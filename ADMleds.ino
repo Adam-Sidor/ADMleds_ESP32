@@ -5,7 +5,7 @@
 #include "lightEffects.h"
 #include "PIR.h"
 
-#define NUM_LEDS 108  //set how many LEDs you have
+#define NUM_LEDS 108+11  //set how many LEDs you have
 #define DATA_PIN 18   //set pin where data pin is connected
 #define PIR_PIN 23    //set pin where PIR sensor is connected
 
@@ -95,6 +95,11 @@ void HTTPRecive() {
           }
         } else if (c != '\r') {
           currentLine += c;
+        }
+        if (currentLine.indexOf("GET /status ") != -1) {
+          sendStatusJSON(client, ledStatus, ledMode, isNightModeOn);
+          doonce = 0;
+          break;
         }
         if (currentLine.indexOf("/mode=") != -1) {
           ledMode = catchValue("/mode=", currentLine);

@@ -3,6 +3,22 @@
 
 #include <WiFiClient.h>
 
+void sendStatusJSON(WiFiClient &client, bool ledStatus, short ledMode, bool isNightModeOn)
+{
+    String json = "{";
+    json += "\"ledStatus\":" + String(ledStatus ? "true" : "false") + ",";
+    json += "\"ledMode\":" + String(ledMode) + ",";
+    json += "\"isNightModeOn\":" + String(isNightModeOn ? "true" : "false");
+    json += "}";
+
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: application/json");
+    client.println("Access-Control-Allow-Origin: *");
+    client.println("Connection: close");
+    client.println();
+    client.println(json);
+}
+
 void sendHTMLResponse(WiFiClient &client)
 {
     client.println("<head>");
