@@ -2,7 +2,7 @@
 
 
 PIR::PIR(int pin):pin(pin), enabled(true) {
-    pinMode(pin,INPUT);
+    pinMode(pin,INPUT_PULLUP);
 }
 
 void PIR::start(bool &nightMode, bool &ledStatus) {
