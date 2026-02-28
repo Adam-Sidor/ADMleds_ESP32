@@ -21,6 +21,10 @@ void sendStatusJSON(WiFiClient &client, bool ledStatus, short ledMode, bool isNi
 
 void sendHTMLResponse(WiFiClient &client)
 {
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-Type: text/html");
+    client.println("Connection: close");
+    client.println();
     client.println("<head>");
     client.println("    <title>");
     client.println("        ADM control");
