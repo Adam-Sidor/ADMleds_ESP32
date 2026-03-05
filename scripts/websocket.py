@@ -12,7 +12,7 @@ sensitivity_divider = 500
 # ---------------------
 
 async def set_esp_mode(ip, mode):
-    url = f"http://{ip}/mode={mode}"
+    url = f"http://{ip}/set?mode={mode}"
     try:
         async with httpx.AsyncClient() as client:
             print(f"-> Mode {mode} dla {ip}")

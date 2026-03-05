@@ -1,16 +1,14 @@
-#include <FS.h>
 #include <WiFi.h>
-#include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSocketsServer.h>
 #include <FastLED.h>
 
 #include "GlobalConfig.h"
 #include "webConfig.h"
-#include "htmlResponse.h"
 #include "lightEffects.h"
 #include "PIR.h"
 #include "webSocketHandler.h"
+#include "httpRequestHandler.h" 
 
 const uint16_t NUM_LEDS = 108; //+11 //set how many LEDs you have
 #define DATA_PIN 18            //set pin where data pin is connected
@@ -29,7 +27,7 @@ PIR pir(PIR_PIN);
 void setup() {
   Serial.begin(115200);
   cfg.load();
-  
+
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -44,82 +42,7 @@ void setup() {
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/html", getHTMLResponse());
-  });
-
-  server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "application/json", getStatusJSON(cfg));
-  });
-
-  server.on("/set", HTTP_GET, [](AsyncWebServerRequest *request){
-    bool needsSaving = false;
-    
-    if (request->hasParam("mode")) {
-      cfg.ledMode = request->getParam("mode")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("status")) {
-      cfg.ledStatus = request->getParam("status")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("brightness")) {
-      cfg.brightness = request->getParam("brightness")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("nightmode")) {
-      cfg.isNightModeOn = request->getParam("nightmode")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("nightbrightness")) {
-      cfg.nightModeBrighness = request->getParam("nightbrightness")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("r")) {
-      cfg.ledsColor.r = request->getParam("r")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("g")) {
-      cfg.ledsColor.g = request->getParam("g")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("b")) {
-      cfg.ledsColor.b = request->getParam("b")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("gradientr")) {
-      cfg.gradientColor.r = request->getParam("gradientr")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("gradientg")) {
-      cfg.gradientColor.g = request->getParam("gradientg")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("gradientb")) {
-      cfg.gradientColor.b = request->getParam("gradientb")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("warning")) {
-      cfg.warningStatus = request->getParam("warning")->value().toInt();
-      needsSaving = true;
-    }
-    if (request->hasParam("pir_enable")) {
-      cfg.pirEnabled = request->getParam("pir_enable")->value().toInt();
-      pir.setEnable(cfg.pirEnabled);
-      needsSaving = true;
-    }
-    if (request->hasParam("pir_delay")) {
-      cfg.pirDelay = request->getParam("pir_delay")->value().toInt();
-      pir.setDelay(cfg.pirDelay);
-      needsSaving = true;
-    }
-    if (request->hasParam("trigger_warning")) {
-      cfg.warning = cfg.ledStatus & cfg.warningStatus;
-    }
-
-    if (needsSaving) cfg.save();
-    request->send(200, "text/plain", "OK");
-  });
+  registerHttpHandlers();
 
   server.begin();
 }
@@ -149,7 +72,7 @@ void loop() {
   } else {
     FastLED.setBrightness(0);
   }
-  
+
   FastLED.show();
   pir.update();
 }
