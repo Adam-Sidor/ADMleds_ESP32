@@ -1,7 +1,12 @@
 #include "esp32-hal.h"
 #include "lightEffects.h"
 
-void rainbowARGB(CRGB *leds, int NUM_LEDS, int delay) {
+extern CRGB leds[];
+extern const uint16_t NUM_LEDS;
+extern CRGB ledsColor;
+extern CRGB gradientColor;
+
+void rainbowARGB(int delay) {
   static int lastChange;
   static int offset;
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -14,7 +19,7 @@ void rainbowARGB(CRGB *leds, int NUM_LEDS, int delay) {
   }
 }
 
-void rainbowRGB(CRGB *leds, int NUM_LEDS, int delay) {
+void rainbowRGB(int delay) {
   static int lastChange;
   static int offset;
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -27,24 +32,24 @@ void rainbowRGB(CRGB *leds, int NUM_LEDS, int delay) {
   }
 }
 
-void setColor(CRGB *leds, int NUM_LEDS, CRGB color) {
+void setColor() {
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = color;
+    leds[i] = ledsColor;
   }
 }
 
-void thunder(CRGB *leds, int NUM_LEDS, CRGB color, int delay) {
+void thunder(int delay) {
   static int lastChange;
   if (lastChange + delay < millis()) {
     int startPoint = random(NUM_LEDS);
     if (startPoint > NUM_LEDS / 2) {
       for (int i = startPoint; i >= 0; i--) {
-        leds[i] = color;
+        leds[i] = ledsColor;
       }
       FastLED.show();
     } else {
       for (int i = startPoint; i < NUM_LEDS; i++) {
-        leds[i] = color;
+        leds[i] = ledsColor;
       }
       FastLED.show();
     }
@@ -53,11 +58,11 @@ void thunder(CRGB *leds, int NUM_LEDS, CRGB color, int delay) {
   }
 }
 
-void gradient(CRGB *leds, int NUM_LEDS, CRGB startColor, CRGB endColor, int delay) {
+void gradient(int delay) {
   static int lastChange;
   static int offset;
   CRGB gradientColors[NUM_LEDS];
-  fill_gradient_RGB(gradientColors, NUM_LEDS, startColor, endColor, startColor);
+  fill_gradient_RGB(gradientColors, NUM_LEDS, ledsColor, gradientColor, ledsColor);
   if (lastChange + delay < millis()) {
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = gradientColors[(i + offset) % NUM_LEDS];
@@ -68,7 +73,7 @@ void gradient(CRGB *leds, int NUM_LEDS, CRGB startColor, CRGB endColor, int dela
   }
 }
 
-bool catchWarning(CRGB *leds, int NUM_LEDS, int blinks, int delay) {
+bool catchWarning(int blinks, int delay) {
   static int currentIteration;
   static int lastChange;
   static bool status;
@@ -78,9 +83,9 @@ bool catchWarning(CRGB *leds, int NUM_LEDS, int blinks, int delay) {
   }
   if (lastChange + delay < millis()) {
     if (!status) {
-      setColor(leds, NUM_LEDS, CRGB(255, 255, 0));
+      for (int i = 0; i < NUM_LEDS; i++) leds[i] = CRGB(255, 255, 0);
     } else {
-      setColor(leds, NUM_LEDS, CRGB(0, 0, 0));
+      for (int i = 0; i < NUM_LEDS; i++) leds[i] = CRGB(0, 0, 0);
       currentIteration++;
     }
     status = !status;

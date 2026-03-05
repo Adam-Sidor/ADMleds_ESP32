@@ -7,13 +7,12 @@
 #include "PIR.h"
 #include "webSocketHandler.h"
 
-const uint16_t NUM_LEDS = 108;//+11  //set how many LEDs you have
-#define DATA_PIN 18   //set pin where data pin is connected
-#define PIR_PIN 23    //set pin where PIR sensor is connected
+const uint16_t NUM_LEDS = 108; //+11;
+#define DATA_PIN 18 
+#define PIR_PIN 23    
 
-// Important!!! uncomment lines below
-// #define WIFI_SSID "SSID" //set your wifi ssid
-// #define WIFI_PASSWORD "PASSWORD" //set your wifi password
+// #define WIFI_SSID "SSID" 
+// #define WIFI_PASSWORD "PASSWORD" 
 
 WiFiServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
@@ -30,7 +29,7 @@ uint8_t brightness = 255, nightModeBrighness = 16;
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  //set your WiFi settings
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(10);
@@ -43,6 +42,7 @@ void setup() {
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
 }
+
 void loop() {
   HTTPRecive();
   if (ledStatus) {
@@ -50,24 +50,25 @@ void loop() {
       FastLED.setBrightness(nightModeBrighness);
     else
       FastLED.setBrightness(brightness);
+
     if (warning) {
-      warning = catchWarning(leds, NUM_LEDS, 3, 250);
+      warning = catchWarning(3, 250); 
     } else {
       switch (ledMode) {
         case 0:
-          rainbowARGB(leds, NUM_LEDS, 50);
+          rainbowARGB(50);
           break;
         case 1:
-          rainbowRGB(leds, NUM_LEDS, 10);
+          rainbowRGB(10);
           break;
         case 2:
-          setColor(leds, NUM_LEDS, ledsColor);
+          setColor();
           break;
         case 3:
-          thunder(leds, NUM_LEDS, ledsColor, 250);
+          thunder(250);
           break;
         case 4:
-          gradient(leds, NUM_LEDS, ledsColor, gradientColor, 100);
+          gradient(100);
           break;
         case 5:
           webSocket.loop();
@@ -76,7 +77,7 @@ void loop() {
           FastLED.clear();
       }
     }
-  }else if(pir.isTriggered()){
+  } else if (pir.isTriggered()) {
     pir.start(isNightModeOn, ledStatus);
   } else {
     FastLED.setBrightness(0);
@@ -84,7 +85,6 @@ void loop() {
   FastLED.show();
   pir.update(isNightModeOn, ledStatus);
 }
-
 
 void HTTPRecive() {
   WiFiClient client = server.available();
@@ -156,7 +156,7 @@ void HTTPRecive() {
         if (currentLine.indexOf("/warning") != -1) {
           if (currentLine.indexOf("/warning=") != -1) {
             warningStatus = catchValue("/warning=", currentLine);
-          }else{
+          } else {
             warning = ledStatus & warningStatus;
           }
           doonce = 0;

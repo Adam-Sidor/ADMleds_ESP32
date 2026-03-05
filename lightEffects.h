@@ -1,8 +1,13 @@
+#ifndef LIGHT_EFFECTS_H
+#define LIGHT_EFFECTS_H
+
 #include <FastLED.h>
 
-void rainbowARGB(CRGB *leds,int NUM_LEDS,int delay);
-void rainbowRGB(CRGB *leds,int NUM_LEDS,int delay);
-void setColor(CRGB *leds,int NUM_LEDS,CRGB color);
-void thunder(CRGB *leds,int NUM_LEDS,CRGB color,int delay);
-void gradient(CRGB *leds,int NUM_LEDS,CRGB startColor,CRGB endColor,int delay);
-bool catchWarning(CRGB *leds, int NUM_LEDS, int blinks, int delay);
+void rainbowARGB(int delay);
+void rainbowRGB(int delay);
+void setColor();
+void thunder(int delay);
+void gradient(int delay);
+bool catchWarning(int blinks, int delay);
+
+#endif
