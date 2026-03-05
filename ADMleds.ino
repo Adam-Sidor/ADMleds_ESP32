@@ -1,35 +1,32 @@
 #include <WiFi.h>
 #include <FastLED.h>
 #include <WebSocketsServer.h>
+#include "GlobalConfig.h"
 #include "webConfig.h"
 #include "htmlResponse.h"
 #include "lightEffects.h"
 #include "PIR.h"
 #include "webSocketHandler.h"
 
-const uint16_t NUM_LEDS = 108; //+11;
-#define DATA_PIN 18 
-#define PIR_PIN 23    
+const uint16_t NUM_LEDS = 108;  //+11 //set how many LEDs you have
+#define DATA_PIN 18             //set pin where data pin is connected
+#define PIR_PIN 23              //set pin where PIR sensor is connected
 
-// #define WIFI_SSID "SSID" 
-// #define WIFI_PASSWORD "PASSWORD" 
+// Important!!! uncomment lines below
+// #define WIFI_SSID "SSID" //set your wifi ssid
+// #define WIFI_PASSWORD "PASSWORD" //set your wifi password
+
+DeviceConfig cfg;
 
 WiFiServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 CRGB leds[NUM_LEDS];
 
-CRGB ledsColor(0, 255, 0);
-CRGB gradientColor(255, 0, 0);
-
 PIR pir(PIR_PIN);
-
-short ledMode = 0;
-bool ledStatus = true, isNightModeOn, warning, warningStatus = true;
-uint8_t brightness = 255, nightModeBrighness = 16;
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  //set your WiFi settings
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(10);
@@ -45,16 +42,16 @@ void setup() {
 
 void loop() {
   HTTPRecive();
-  if (ledStatus) {
-    if (isNightModeOn)
-      FastLED.setBrightness(nightModeBrighness);
+  if (cfg.ledStatus) {
+    if (cfg.isNightModeOn)
+      FastLED.setBrightness(cfg.nightModeBrighness);
     else
-      FastLED.setBrightness(brightness);
+      FastLED.setBrightness(cfg.brightness);
 
-    if (warning) {
-      warning = catchWarning(3, 250); 
+    if (cfg.warning) {
+      cfg.warning = catchWarning(3, 250);
     } else {
-      switch (ledMode) {
+      switch (cfg.ledMode) {
         case 0:
           rainbowARGB(50);
           break;
@@ -78,19 +75,19 @@ void loop() {
       }
     }
   } else if (pir.isTriggered()) {
-    pir.start(isNightModeOn, ledStatus);
+    pir.start();
   } else {
     FastLED.setBrightness(0);
   }
   FastLED.show();
-  pir.update(isNightModeOn, ledStatus);
+  pir.update();
 }
 
 void HTTPRecive() {
   WiFiClient client = server.available();
   if (client) {
     String currentLine = "";
-    bool doonce;
+    bool doonce = 1;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
@@ -105,59 +102,59 @@ void HTTPRecive() {
           currentLine += c;
         }
         if (currentLine.indexOf("GET /status ") != -1) {
-          sendStatusJSON(client, ledStatus, ledMode, isNightModeOn);
+          sendStatusJSON(client, cfg); // Zaktualizowane wywołanie
           doonce = 0;
           break;
         }
         if (currentLine.indexOf("/mode=") != -1) {
-          ledMode = catchValue("/mode=", currentLine);
+          cfg.ledMode = catchValue("/mode=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/status=") != -1) {
-          ledStatus = catchValue("/status=", currentLine);
+          cfg.ledStatus = catchValue("/status=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/brightness=") != -1) {
-          brightness = catchValue("/brightness=", currentLine);
+          cfg.brightness = catchValue("/brightness=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/nightmode=") != -1) {
-          isNightModeOn = catchValue("/nightmode=", currentLine);
+          cfg.isNightModeOn = catchValue("/nightmode=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/nightbrightness=") != -1) {
-          nightModeBrighness = catchValue("/nightbrightness=", currentLine);
+          cfg.nightModeBrighness = catchValue("/nightbrightness=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/r=") != -1) {
-          ledsColor.r = catchValue("/r=", currentLine);
+          cfg.ledsColor.r = catchValue("/r=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/g=") != -1) {
-          ledsColor.g = catchValue("/g=", currentLine);
+          cfg.ledsColor.g = catchValue("/g=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/b=") != -1) {
-          ledsColor.b = catchValue("/b=", currentLine);
+          cfg.ledsColor.b = catchValue("/b=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/gradientr=") != -1) {
-          gradientColor.r = catchValue("/gradientr=", currentLine);
+          cfg.gradientColor.r = catchValue("/gradientr=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/gradientg=") != -1) {
-          gradientColor.g = catchValue("/gradientg=", currentLine);
+          cfg.gradientColor.g = catchValue("/gradientg=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/gradientb=") != -1) {
-          gradientColor.b = catchValue("/gradientb=", currentLine);
+          cfg.gradientColor.b = catchValue("/gradientb=", currentLine);
           doonce = 0;
         }
         if (currentLine.indexOf("/warning") != -1) {
           if (currentLine.indexOf("/warning=") != -1) {
-            warningStatus = catchValue("/warning=", currentLine);
+            cfg.warningStatus = catchValue("/warning=", currentLine);
           } else {
-            warning = ledStatus & warningStatus;
+            cfg.warning = cfg.ledStatus & cfg.warningStatus;
           }
           doonce = 0;
         }

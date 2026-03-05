@@ -2,13 +2,14 @@
 #define HTML_RESPONSE_H
 
 #include <WiFiClient.h>
+#include "GlobalConfig.h"
 
-void sendStatusJSON(WiFiClient &client, bool ledStatus, short ledMode, bool isNightModeOn)
+void sendStatusJSON(WiFiClient &client, DeviceConfig &config)
 {
     String json = "{";
-    json += "\"ledStatus\":" + String(ledStatus ? "true" : "false") + ",";
-    json += "\"ledMode\":" + String(ledMode) + ",";
-    json += "\"isNightModeOn\":" + String(isNightModeOn ? "true" : "false");
+    json += "\"ledStatus\":" + String(config.ledStatus ? "true" : "false") + ",";
+    json += "\"ledMode\":" + String(config.ledMode) + ",";
+    json += "\"isNightModeOn\":" + String(config.isNightModeOn ? "true" : "false");
     json += "}";
 
     client.println("HTTP/1.1 200 OK");

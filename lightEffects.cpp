@@ -1,10 +1,10 @@
 #include "esp32-hal.h"
 #include "lightEffects.h"
+#include "GlobalConfig.h"
 
 extern CRGB leds[];
 extern const uint16_t NUM_LEDS;
-extern CRGB ledsColor;
-extern CRGB gradientColor;
+extern DeviceConfig cfg;
 
 void rainbowARGB(int delay) {
   static int lastChange;
@@ -34,7 +34,7 @@ void rainbowRGB(int delay) {
 
 void setColor() {
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ledsColor;
+    leds[i] = cfg.ledsColor;
   }
 }
 
@@ -44,12 +44,12 @@ void thunder(int delay) {
     int startPoint = random(NUM_LEDS);
     if (startPoint > NUM_LEDS / 2) {
       for (int i = startPoint; i >= 0; i--) {
-        leds[i] = ledsColor;
+        leds[i] = cfg.ledsColor;
       }
       FastLED.show();
     } else {
       for (int i = startPoint; i < NUM_LEDS; i++) {
-        leds[i] = ledsColor;
+        leds[i] = cfg.ledsColor;
       }
       FastLED.show();
     }
@@ -62,7 +62,7 @@ void gradient(int delay) {
   static int lastChange;
   static int offset;
   CRGB gradientColors[NUM_LEDS];
-  fill_gradient_RGB(gradientColors, NUM_LEDS, ledsColor, gradientColor, ledsColor);
+  fill_gradient_RGB(gradientColors, NUM_LEDS, cfg.ledsColor, cfg.gradientColor, cfg.ledsColor);
   if (lastChange + delay < millis()) {
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = gradientColors[(i + offset) % NUM_LEDS];

@@ -1,23 +1,25 @@
 #include "PIR.h"
+#include "GlobalConfig.h"
 
+extern DeviceConfig cfg;
 
 PIR::PIR(int pin):pin(pin), enabled(true) {
     pinMode(pin,INPUT_PULLUP);
 }
 
-void PIR::start(bool &nightMode, bool &ledStatus) {
-    startNightModeState = nightMode;
-    nightMode = true;
-    ledStatus = true;
+void PIR::start() {
+    startNightModeState = cfg.isNightModeOn;
+    cfg.isNightModeOn = true;
+    cfg.ledStatus = true;
     hasTimerStarted = true;
     lastChange = millis();
 }
 
-void PIR::update(bool &nightMode, bool &ledStatus) {
+void PIR::update() {
     if (hasTimerStarted) {
         if (millis() - lastChange >= delaySeconds * 1000) {
-            nightMode = startNightModeState;
-            ledStatus = false;
+            cfg.isNightModeOn = startNightModeState;
+            cfg.ledStatus = false;
             hasTimerStarted = false;
         }
     }
