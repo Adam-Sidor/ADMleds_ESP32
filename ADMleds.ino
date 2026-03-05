@@ -8,9 +8,9 @@
 #include "PIR.h"
 #include "webSocketHandler.h"
 
-const uint16_t NUM_LEDS = 108;  //+11 //set how many LEDs you have
-#define DATA_PIN 18             //set pin where data pin is connected
-#define PIR_PIN 23              //set pin where PIR sensor is connected
+const uint16_t NUM_LEDS = 108; //+11 //set how many LEDs you have
+#define DATA_PIN 18            //set pin where data pin is connected
+#define PIR_PIN 23             //set pin where PIR sensor is connected
 
 // Important!!! uncomment lines below
 // #define WIFI_SSID "SSID" //set your wifi ssid
@@ -26,7 +26,10 @@ PIR pir(PIR_PIN);
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);  //set your WiFi settings
+  
+  cfg.load();
+  
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD); //set your WiFi settings
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(10);
@@ -35,7 +38,10 @@ void setup() {
   Serial.println(WiFi.localIP());
   server.begin();
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
-  pir.setDelay(5);
+  
+  pir.setEnable(cfg.pirEnabled);
+  pir.setDelay(cfg.pirDelay);
+  
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
 }
@@ -87,7 +93,7 @@ void HTTPRecive() {
   WiFiClient client = server.available();
   if (client) {
     String currentLine = "";
-    bool doonce = 1;
+    bool needsSaving = false;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
@@ -101,78 +107,80 @@ void HTTPRecive() {
         } else if (c != '\r') {
           currentLine += c;
         }
+
         if (currentLine.indexOf("GET /status ") != -1) {
-          sendStatusJSON(client, cfg); // Zaktualizowane wywołanie
-          doonce = 0;
+          sendStatusJSON(client, cfg);
           break;
         }
         if (currentLine.indexOf("/mode=") != -1) {
           cfg.ledMode = catchValue("/mode=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/status=") != -1) {
           cfg.ledStatus = catchValue("/status=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/brightness=") != -1) {
           cfg.brightness = catchValue("/brightness=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/nightmode=") != -1) {
           cfg.isNightModeOn = catchValue("/nightmode=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/nightbrightness=") != -1) {
           cfg.nightModeBrighness = catchValue("/nightbrightness=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/r=") != -1) {
           cfg.ledsColor.r = catchValue("/r=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/g=") != -1) {
           cfg.ledsColor.g = catchValue("/g=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/b=") != -1) {
           cfg.ledsColor.b = catchValue("/b=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/gradientr=") != -1) {
           cfg.gradientColor.r = catchValue("/gradientr=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/gradientg=") != -1) {
           cfg.gradientColor.g = catchValue("/gradientg=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/gradientb=") != -1) {
           cfg.gradientColor.b = catchValue("/gradientb=", currentLine);
-          doonce = 0;
+          needsSaving = true;
         }
         if (currentLine.indexOf("/warning") != -1) {
           if (currentLine.indexOf("/warning=") != -1) {
             cfg.warningStatus = catchValue("/warning=", currentLine);
+            needsSaving = true;
           } else {
             cfg.warning = cfg.ledStatus & cfg.warningStatus;
           }
-          doonce = 0;
         }
         if (currentLine.indexOf("/pir") != -1) {
           if (currentLine.indexOf("/enable=") != -1) {
-            pir.setEnable(catchValue("/enable=", currentLine));
-            doonce = 0;
+            cfg.pirEnabled = catchValue("/enable=", currentLine);
+            pir.setEnable(cfg.pirEnabled);
+            needsSaving = true;
           }
           if (currentLine.indexOf("/delay=") != -1) {
-            pir.setDelay(catchValue("/delay=", currentLine));
-            doonce = 0;
+            cfg.pirDelay = catchValue("/delay=", currentLine);
+            pir.setDelay(cfg.pirDelay);
+            needsSaving = true;
           }
         }
       }
     }
     client.stop();
-    if (doonce == 0) {
-      doonce = 1;
+    if (needsSaving) {
+      cfg.save();
     }
   }
 }
