@@ -1,23 +1,26 @@
 #include <WiFi.h>
 #include <FastLED.h>
+#include <WebSocketsServer.h>
 #include "webConfig.h"
 #include "htmlResponse.h"
 #include "lightEffects.h"
 #include "PIR.h"
+#include "webSocketHandler.h"
 
-#define NUM_LEDS 108+11  //set how many LEDs you have
+const uint16_t NUM_LEDS = 108;//+11  //set how many LEDs you have
 #define DATA_PIN 18   //set pin where data pin is connected
 #define PIR_PIN 23    //set pin where PIR sensor is connected
 
-//uncomment this lines
+// Important!!! uncomment lines below
 // #define WIFI_SSID "SSID" //set your wifi ssid
 // #define WIFI_PASSWORD "PASSWORD" //set your wifi password
 
 WiFiServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81);
 CRGB leds[NUM_LEDS];
 
-CRGB ledsColor(0, 0, 0);
-CRGB gradientColor(0, 0, 0);
+CRGB ledsColor(0, 255, 0);
+CRGB gradientColor(255, 0, 0);
 
 PIR pir(PIR_PIN);
 
@@ -37,6 +40,8 @@ void setup() {
   server.begin();
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
   pir.setDelay(5);
+  webSocket.begin();
+  webSocket.onEvent(onWebSocketEvent);
 }
 void loop() {
   HTTPRecive();
@@ -63,6 +68,9 @@ void loop() {
           break;
         case 4:
           gradient(leds, NUM_LEDS, ledsColor, gradientColor, 100);
+          break;
+        case 5:
+          webSocket.loop();
           break;
         default:
           FastLED.clear();
